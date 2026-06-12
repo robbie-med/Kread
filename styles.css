@@ -1,0 +1,177 @@
+:root {
+  --bg: #1a1a2e;
+  --card: #16213e;
+  --accent: #e94560;
+  --text: #eaeaea;
+  --muted: #9aa0b5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.levels {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.levels button {
+  background: var(--card);
+  color: var(--text);
+  border: 2px solid transparent;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.levels button:hover {
+  border-color: var(--accent);
+  opacity: 0.8;
+}
+
+.levels button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+#korean {
+  font-size: 3rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  word-break: keep-all;
+  cursor: pointer;
+  user-select: none;
+}
+
+#korean .syl {
+  transition: color 0.15s;
+  padding: 4px 2px;
+  border-radius: 4px;
+}
+
+#korean .syl.lit {
+  color: var(--accent);
+  background: rgba(233, 69, 96, 0.1);
+}
+
+#hint {
+  min-height: 3.2em;
+  color: var(--muted);
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+}
+
+#hint .rom {
+  color: #f0c060;
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.controls button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.controls button:hover {
+  background: #ff4d6d;
+}
+
+.controls button.secondary {
+  background: #3a3f5c;
+}
+
+.controls button.secondary:hover {
+  background: #4a5070;
+}
+
+.controls button:active {
+  transform: scale(0.96);
+}
+
+#progress {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+#timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+
+#attribution {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: #7a8099;
+  font-style: italic;
+}
+
+#attribution a {
+  color: #9db4db;
+  text-decoration: none;
+}
+
+#attribution a:hover {
+  text-decoration: underline;
+}
+
+.tip {
+  max-width: 640px;
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  line-height: 1.5;
+}

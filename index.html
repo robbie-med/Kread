@@ -1,96 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Korean Read-Aloud Trainer</title>
-<style>
-  :root {
-    --bg: #1a1a2e;
-    --card: #16213e;
-    --accent: #e94560;
-    --text: #eaeaea;
-    --muted: #9aa0b5;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-  }
-  h1 { font-size: 1.3rem; margin-bottom: 16px; color: var(--muted); font-weight: 500; }
-  .levels {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  .levels button {
-    background: var(--card);
-    color: var(--text);
-    border: 2px solid transparent;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-  .levels button.active {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  .card {
-    background: var(--card);
-    border-radius: 16px;
-    padding: 40px 30px;
-    width: 100%;
-    max-width: 640px;
-    text-align: center;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  #korean {
-    font-size: 3rem;
-    line-height: 1.5;
-    margin-bottom: 20px;
-    word-break: keep-all;
-    cursor: pointer;
-    user-select: none;
-  }
-  #korean .syl { transition: color 0.15s; }
-  #korean .syl.lit { color: var(--accent); }
-  #hint {
-    min-height: 3.2em;
-    color: var(--muted);
-    font-size: 1.1rem;
-    margin-bottom: 24px;
-  }
-  #hint .rom { color: #f0c060; font-size: 1.2rem; display: block; margin-bottom: 4px; }
-  .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .controls button {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  .controls button.secondary { background: #3a3f5c; }
-  .controls button:active { transform: scale(0.96); }
-  #progress { margin-top: 18px; color: var(--muted); font-size: 0.85rem; }
-  #timer {
-    font-variant-numeric: tabular-nums;
-    color: var(--accent);
-    font-size: 0.95rem;
-    margin-top: 6px;
-  }
-  .tip { max-width: 640px; margin-top: 20px; color: var(--muted); font-size: 0.85rem; text-align: center; line-height: 1.5; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Korean Read-Aloud Trainer</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -109,6 +23,7 @@
   </div>
   <div id="progress"></div>
   <div id="timer"></div>
+  <div id="attribution"></div>
 </div>
 
 <p class="tip">
@@ -117,150 +32,9 @@
   Press "Reveal" only if stuck. Work up one level at a time.
 </p>
 
-<script>
-const DATA = {
-  "1. Syllables": [
-    ["가", "ga", ""], ["나", "na", ""], ["다", "da", ""], ["바", "ba", ""],
-    ["서", "seo", ""], ["고", "go", ""], ["무", "mu", ""], ["지", "ji", ""],
-    ["하", "ha", ""], ["래", "rae", ""], ["워", "wo", ""], ["의", "ui", ""],
-    ["값", "gap", ""], ["밝", "bak", ""], ["읽", "ik", ""], ["꽃", "kkot", ""],
-    ["닭", "dak", ""], ["없", "eop", ""], ["앉", "an", ""], ["흙", "heuk", ""]
-  ],
-  "2. Words": [
-    ["사람", "sa-ram", "person"], ["학교", "hak-gyo", "school"],
-    ["음식", "eum-sik", "food"], ["친구", "chin-gu", "friend"],
-    ["시간", "si-gan", "time"], ["여행", "yeo-haeng", "travel"],
-    ["병원", "byeong-won", "hospital"], ["도서관", "do-seo-gwan", "library"],
-    ["냉장고", "naeng-jang-go", "refrigerator"], ["지하철", "ji-ha-cheol", "subway"],
-    ["대한민국", "dae-han-min-guk", "South Korea"], ["텔레비전", "tel-le-bi-jeon", "television"],
-    ["선생님", "seon-saeng-nim", "teacher"], ["아름답다", "a-reum-dap-da", "to be beautiful"],
-    ["맛있어요", "ma-si-sseo-yo", "it's delicious"], ["괜찮아요", "gwaen-cha-na-yo", "it's okay"]
-  ],
-  "3. Phrases": [
-    ["안녕하세요", "an-nyeong-ha-se-yo", "Hello"],
-    ["감사합니다", "gam-sa-ham-ni-da", "Thank you"],
-    ["잘 먹겠습니다", "jal meok-get-seum-ni-da", "I will eat well (before a meal)"],
-    ["조금만 기다려 주세요", "jo-geum-man gi-da-ryeo ju-se-yo", "Please wait a moment"],
-    ["얼마예요?", "eol-ma-ye-yo", "How much is it?"],
-    ["화장실이 어디예요?", "hwa-jang-si-ri eo-di-ye-yo", "Where is the bathroom?"],
-    ["천천히 말해 주세요", "cheon-cheon-hi mal-hae ju-se-yo", "Please speak slowly"],
-    ["한국어를 공부하고 있어요", "han-gu-geo-reul gong-bu-ha-go i-sseo-yo", "I am studying Korean"]
-  ],
-  "4. Sentences": [
-    ["저는 매일 아침에 커피를 마셔요.", "jeo-neun mae-il a-chi-me keo-pi-reul ma-syeo-yo", "I drink coffee every morning."],
-    ["주말에 친구랑 영화를 봤어요.", "ju-ma-re chin-gu-rang yeong-hwa-reul bwa-sseo-yo", "I watched a movie with a friend on the weekend."],
-    ["내일 날씨가 좋으면 공원에 갈 거예요.", "nae-il nal-ssi-ga jo-eu-myeon gong-wo-ne gal geo-ye-yo", "If the weather is nice tomorrow, I will go to the park."],
-    ["한국 음식 중에서 김치찌개를 제일 좋아해요.", "han-guk eum-sik jung-e-seo gim-chi-jji-gae-reul je-il jo-a-hae-yo", "Among Korean foods, I like kimchi stew the most."],
-    ["어제 너무 피곤해서 일찍 잤어요.", "eo-je neo-mu pi-gon-hae-seo il-jjik ja-sseo-yo", "I was so tired yesterday that I slept early."],
-    ["지하철역에서 오른쪽으로 가면 은행이 있어요.", "ji-ha-cheol-lyeo-ge-seo o-reun-jjo-geu-ro ga-myeon eun-haeng-i i-sseo-yo", "If you go right from the subway station, there is a bank."]
-  ],
-  "5. Wall of Text": [
-    ["오늘은 날씨가 정말 좋았어요. 그래서 친구와 함께 한강 공원에 갔어요. 우리는 자전거를 타고 강을 따라 달렸어요. 점심에는 치킨을 시켜서 잔디밭에서 먹었어요.",
-     "(Read it chunk by chunk — click each word as you go!)",
-     "The weather was really nice today, so I went to Han River Park with a friend. We rode bikes along the river. For lunch we ordered chicken and ate it on the grass."],
-    ["저는 작년부터 한국어를 공부하기 시작했어요. 처음에는 한글을 읽는 것도 어려웠지만, 매일 조금씩 연습했더니 점점 쉬워졌어요. 이제는 간단한 대화도 할 수 있어요.",
-     "(One word at a time. Slow is fine. Smooth comes later.)",
-     "I started studying Korean last year. At first even reading Hangul was hard, but I practiced a little every day and it gradually got easier. Now I can even have simple conversations."]
-  ]
-};
-
-let currentLevel = Object.keys(DATA)[0];
-let deck = [];
-let idx = 0;
-let startTime = null;
-let timerInterval = null;
-
-const koreanEl = document.getElementById('korean');
-const hintEl = document.getElementById('hint');
-const progressEl = document.getElementById('progress');
-const timerEl = document.getElementById('timer');
-
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function buildLevels() {
-  const div = document.getElementById('levels');
-  Object.keys(DATA).forEach(name => {
-    const b = document.createElement('button');
-    b.textContent = name;
-    b.onclick = () => setLevel(name, b);
-    if (name === currentLevel) b.classList.add('active');
-    div.appendChild(b);
-  });
-}
-
-function setLevel(name, btn) {
-  currentLevel = name;
-  document.querySelectorAll('.levels button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  deck = shuffle([...DATA[name]]);
-  idx = 0;
-  show();
-}
-
-function show() {
-  const [kor] = deck[idx];
-  // Wrap each syllable in a span so the user can click-track their place
-  koreanEl.innerHTML = [...kor].map(ch =>
-    /[가-힣]/.test(ch) ? `<span class="syl">${ch}</span>` : ch
-  ).join('');
-  koreanEl.style.fontSize = kor.length > 30 ? '1.6rem' : kor.length > 12 ? '2.2rem' : '3rem';
-  koreanEl.querySelectorAll('.syl').forEach(s => {
-    s.onclick = () => s.classList.toggle('lit');
-  });
-  hintEl.innerHTML = '&nbsp;';
-  progressEl.textContent = `${idx + 1} / ${deck.length} — ${currentLevel}`;
-  startTime = Date.now();
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    timerEl.textContent = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
-  }, 100);
-}
-
-function reveal() {
-  const [, rom, meaning] = deck[idx];
-  hintEl.innerHTML = `<span class="rom">${rom}</span>${meaning || ''}`;
-}
-
-function speak(rate = 0.9) {
-  const u = new SpeechSynthesisUtterance(deck[idx][0]);
-  u.lang = 'ko-KR';
-  u.rate = rate;
-  const koVoice = speechSynthesis.getVoices().find(v => v.lang.startsWith('ko'));
-  if (koVoice) u.voice = koVoice;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
-}
-
-function next() {
-  idx = (idx + 1) % deck.length;
-  if (idx === 0) deck = shuffle([...deck]);
-  show();
-}
-
-document.getElementById('revealBtn').onclick = reveal;
-document.getElementById('speakBtn').onclick = () => speak(0.9);
-document.getElementById('slowBtn').onclick = () => speak(0.55);
-document.getElementById('nextBtn').onclick = next;
-
-document.addEventListener('keydown', e => {
-  if (e.code === 'Space') { e.preventDefault(); next(); }
-  if (e.key === 'r' || e.key === 'R') reveal();
-  if (e.key === 's' || e.key === 'S') speak(0.9);
-  if (e.key === 'd' || e.key === 'D') speak(0.55);
-});
-
-// Voices load asynchronously in some browsers
-speechSynthesis.onvoiceschanged = () => {};
-
-deck = shuffle([...DATA[currentLevel]]);
-buildLevels();
-show();
-</script>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="bible-fetcher.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
